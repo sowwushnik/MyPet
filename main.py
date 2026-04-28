@@ -1,2 +1,2 @@
 print("Hello World")
-print("It's a inital commit")
+print("It's inital commit")
