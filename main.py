@@ -5,8 +5,32 @@ def display_menu():
     print("1. Register a Dog")
     print("2. Register a Cat")
     print("3. View Registered Pets")
-    print("4. Exit")
+    print("4. Add Health Log")
+    print("5. View Health History")
+    print("6. Exit \n")
     return input("Select an option: ")
+
+def select_pet(pets_list):
+    if not pets_list:
+        print("No pets available!")
+        return None
+
+    print("\n Select a pet: \n")
+    for i, pet in enumerate(pets_list):
+        print(f"{i + 1}. {pet.name}")
+
+    try:
+        choice = int(input("\nEnter your choice: ")) - 1
+        if 0 <= choice < len(pets_list):
+            return pets_list[choice]
+        else:
+            print("Please enter a valid option")
+            return None
+
+    except ValueError:
+        print("Please enter a valid option")
+        return None
+
 
 def main():
     pets = []
@@ -38,7 +62,22 @@ def main():
                     print(f" > Daily Nutrition Goal: {p.calculate_daily_calories():.2f} kcal \n")
 
         elif choice == '4':
-            print("--- Exiting --- \n")
+            chosen_pet = select_pet(pets)
+            if chosen_pet:
+                note = input(f"What happened with {chosen_pet.name} today? ")
+                confirm_msg = chosen_pet.add_log(note)
+                print(confirm_msg)
+
+        elif choice == '5':
+            chosen_pet = select_pet(pets)
+            if chosen_pet:
+                print(f"\n--- Health History for {chosen_pet.name} ---")
+                history = chosen_pet.get_history()
+                print(history)
+                print("-----------------")
+
+        elif choice == '6':
+            print("\n --- Exiting --- \n")
             break
 
         else:
