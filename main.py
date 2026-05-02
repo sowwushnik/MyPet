@@ -42,11 +42,13 @@ def main():
             name = input("Enter your name: ")
             age = int(input("Enter your age: "))
             weight = float(input("Enter your weight(in kg): "))
+            breed = input("Enter breed: ")
+            temp = input("Enter character (e.g., Playful, Calm): ")
 
             if choice == '1':
-                new_pet = Dog(name,age,weight)
+                new_pet = Dog(name, age, weight, breed, temp)
             else:
-                new_pet = Cat(name,age,weight)
+                new_pet = Cat(name, age, weight, breed, temp)
 
             pets.append(new_pet)
             print(f"Successfully registered {name}!")

@@ -40,11 +40,41 @@ class Pet:
         return "\n".join(self.health_logs)
 
 class Dog(Pet):
+    def __init__(self, name, age, weight, breed, temperament):
+        super().__init(name, age, weight)
+        self.breed = breed
+        self.temperament = temperament
+
+    def __str__(self):
+        return (f"---------------------------\n"
+                f"NAME: {self.name}\n"
+                f"TYPE: {self.__class__.__name__}\n"
+                f"AGE: {self.age} years\n"
+                f"WEIGHT: {self.weight} kg\n"
+                f"BREED: {self.breed}\n"
+                f"CHARACTER: {self.temperament}\n"
+                f"---------------------------")
+
     def calculate_daily_calories(self):
         rer = super().calculate_daily_calories()
         return rer * 1.2
 
 class Cat(Pet):
+    def __init__(self, name, age, weight, breed, temperament):
+        super().__init__(name, age, weight)
+        self.breed = breed
+        self.temperament = temperament
+
+    def __str__(self):
+        return (f"---------------------------\n"
+                f"NAME: {self.name}\n"
+                f"TYPE: {self.__class__.__name__}\n"
+                f"AGE: {self.age} years\n"
+                f"WEIGHT: {self.weight} kg\n"
+                f"BREED: {self.breed}\n"
+                f"CHARACTER: {self.temperament}\n"
+                f"---------------------------")
+
     def calculate_daily_calories(self):
         rer = super().calculate_daily_calories()
         return rer * 1.0
