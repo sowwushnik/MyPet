@@ -7,7 +7,8 @@ def display_menu():
     print("3. View Registered Pets")
     print("4. Add Health Log")
     print("5. View Health History")
-    print("6. Exit \n")
+    print("6. Update Last Checkup")
+    print("7. Exit \n")
     return input("Select an option: ")
 
 def select_pet(pets_list):
@@ -39,9 +40,9 @@ def main():
         choice = display_menu()
 
         if choice == '1' or choice == '2':
-            name = input("Enter your name: ")
-            age = int(input("Enter your age: "))
-            weight = float(input("Enter your weight(in kg): "))
+            name = input("Enter pet's name: ")
+            age = int(input("Enter pet's age: "))
+            weight = float(input("Enter pet's weight(in kg): "))
             breed = input("Enter breed: ")
             temp = input("Enter character (e.g., Playful, Calm): ")
 
@@ -61,7 +62,10 @@ def main():
             else:
                 for p in pets:
                     print(p)
-                    print(f" > Daily Nutrition Goal: {p.calculate_daily_calories():.2f} kcal \n")
+                    print(f" > Status: {p.check_health_status()}")
+                    print(f" > Daily Nutrition Goal: {p.calculate_daily_calories():.2f} kcal")
+                    print(f" > Care Note: {p.get_health_advice()}")
+                    print(f" > Last Checkup: {p.last_checkup} \n")
 
         elif choice == '4':
             chosen_pet = select_pet(pets)
@@ -79,6 +83,13 @@ def main():
                 print("-----------------")
 
         elif choice == '6':
+            chosen_pet = select_pet(pets)
+            if chosen_pet:
+                new_date = input("Enter new date: ")
+                chosen_pet.last_checkup = new_date
+                print(f"Checkup date for {chosen_pet.name} updated!")
+
+        elif choice == '7':
             print("\n --- Exiting --- \n")
             break
 

@@ -17,6 +17,7 @@ class Pet:
             self.weight = weight
 
         self.health_logs = []
+        self.last_checkup = "Not recorded"
 
     def __str__(self):
         return (f"---------------------------\n"
@@ -39,9 +40,22 @@ class Pet:
         
         return "\n".join(self.health_logs)
 
+    def get_health_advice(self):
+        return "Regular vet visits are recommended once a year"
+
+    def check_health_status(self):
+        status = "Healthy / Normal"
+
+        if self.age > 10 and self.weight > 30:
+            status = "Senior - Watch for joints and weight"
+        elif self.weight < 2:
+            status = "Underweight or very small - Ensure high calorie intake"
+
+        return status
+
 class Dog(Pet):
     def __init__(self, name, age, weight, breed, temperament):
-        super().__init(name, age, weight)
+        super().__init__(name, age, weight)
         self.breed = breed
         self.temperament = temperament
 
@@ -58,6 +72,9 @@ class Dog(Pet):
     def calculate_daily_calories(self):
         rer = super().calculate_daily_calories()
         return rer * 1.2
+
+    def get_health_advice(self):
+        return f"Advice for {self.breed}: Check paws after walks and visit vet every 6 months"
 
 class Cat(Pet):
     def __init__(self, name, age, weight, breed, temperament):
@@ -78,3 +95,6 @@ class Cat(Pet):
     def calculate_daily_calories(self):
         rer = super().calculate_daily_calories()
         return rer * 1.0
+
+    def get_health_advice(self):
+        return "Advice: Monitor dental health and ensure fresh water is always available"
