@@ -18,6 +18,7 @@ class Pet:
 
         self.health_logs = []
         self.last_checkup = "Not recorded"
+        self.is_vaccinated = False
 
     def __str__(self):
         return (f"---------------------------\n"
@@ -53,6 +54,16 @@ class Pet:
 
         return status
 
+
+    def get_weight_category(self):
+        return "Unknown"
+
+    def get_vaccination_status(self):
+        if self.is_vaccinated:
+            return "Fully vaccinated"
+        else:
+            return "NOT VACCINATED (Action required)"
+
 class Dog(Pet):
     def __init__(self, name, age, weight, breed, temperament):
         super().__init__(name, age, weight)
@@ -76,6 +87,14 @@ class Dog(Pet):
     def get_health_advice(self):
         return f"Advice for {self.breed}: Check paws after walks and visit vet every 6 months"
 
+    def get_weight_category(self):
+        if self.weight < 5:
+            return "Toy/Small (Check for fragile bones)"
+        elif 5 <= self.weight < 30:
+            return "Medium (Ideal for most active breeds"
+        else:
+            return "Large/Giant (Watch for joint pressure)"
+
 class Cat(Pet):
     def __init__(self, name, age, weight, breed, temperament):
         super().__init__(name, age, weight)
@@ -98,3 +117,11 @@ class Cat(Pet):
 
     def get_health_advice(self):
         return "Advice: Monitor dental health and ensure fresh water is always available"
+
+    def get_weight_category(self):
+        if self.weight < 3.5:
+            return "Underweight (Needs more nutrition)"
+        elif 3.5 <= self.weight < 5.5:
+            return "Ideal Weight (Perfect condition)"
+        else:
+            return "Overweight (Risk of diabetes, consult vet)"

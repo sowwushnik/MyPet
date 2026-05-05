@@ -8,7 +8,8 @@ def display_menu():
     print("4. Add Health Log")
     print("5. View Health History")
     print("6. Update Last Checkup")
-    print("7. Exit \n")
+    print("7. Vaccination")
+    print("8. Exit \n")
     return input("Select an option: ")
 
 def select_pet(pets_list):
@@ -65,7 +66,9 @@ def main():
                     print(f" > Status: {p.check_health_status()}")
                     print(f" > Daily Nutrition Goal: {p.calculate_daily_calories():.2f} kcal")
                     print(f" > Care Note: {p.get_health_advice()}")
-                    print(f" > Last Checkup: {p.last_checkup} \n")
+                    print(f" > Last Checkup: {p.last_checkup}")
+                    print(f" > Weight Analysis: {p.get_weight_category()}")
+                    print(f" > Vaccination: {p.get_vaccination_status()} \n")
 
         elif choice == '4':
             chosen_pet = select_pet(pets)
@@ -90,6 +93,13 @@ def main():
                 print(f"Checkup date for {chosen_pet.name} updated!")
 
         elif choice == '7':
+            chosen_pet = select_pet(pets)
+            if chosen_pet:
+                chosen_pet.is_vaccinated = True
+                chosen_pet.add_log("Vaccinated updated to: Fully vaccinated")
+                print(f"Great! {chosen_pet.name} is now marked as vaccinated")
+
+        elif choice == '8':
             print("\n --- Exiting --- \n")
             break
 
