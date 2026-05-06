@@ -1,4 +1,6 @@
 from models.pet import Dog,Cat
+import json
+import os
 
 def display_menu():
     print("\n --- MyPet: Health Tracker --- \n")
@@ -11,6 +13,39 @@ def display_menu():
     print("7. Vaccination")
     print("8. Exit \n")
     return input("Select an option: ")
+
+def load_pets():
+    filename = "pets_data.json"
+
+    if not os.path.exists(filename):
+        return []
+
+    try:
+        with open(filename, "r") as f:
+            data = json.load(f)
+
+        loaded_pets = []
+        for item in data:
+            pet_type = item.get("type")
+
+            if pet_type == "Dog":
+                pet = Dog(item["name"], item["age"], item["weight"], item["breed"], item["temperament"])
+            elif pet_type == "Cat":
+                pet = Cat(item["name"], item["age"], item["weight"], item["breed"], item["temperament"])
+            else:
+                continue
+
+            pet.is_vaccinated = item.get("is_vaccinated", False)
+            pet.last_checkup = item.get("last_checkup", "Not recorded")
+            pet.health_logs = item.get("health_logs", [])
+
+            loaded_pets.append(pet)
+
+        return loaded_pets
+    except Exception as e:
+        print(f"Error loading data: {e}")
+        return []
+
 
 def select_pet(pets_list):
     if not pets_list:
@@ -33,9 +68,17 @@ def select_pet(pets_list):
         print("Please enter a valid option")
         return None
 
+def save_pets(pets_list):
+    data_to_save = [p.to_dict() for p in pets_list]
+
+    with open("pets_data.json", "w") as f:
+        json.dump(data_to_save, f, indent=4)
+        print("Pet data saved into pets_data.json!")
+
 
 def main():
-    pets = []
+    pets = load_pets()
+    print(f"Loaded {len(pets)} pets from database")
 
     while True:
         choice = display_menu()
@@ -100,6 +143,7 @@ def main():
                 print(f"Great! {chosen_pet.name} is now marked as vaccinated")
 
         elif choice == '8':
+            save_pets(pets)
             print("\n --- Exiting --- \n")
             break
 
