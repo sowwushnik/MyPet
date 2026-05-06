@@ -64,6 +64,17 @@ class Pet:
         else:
             return "NOT VACCINATED (Action required)"
 
+    def to_dict(self):
+        return {
+            "type": self.__class__.__name__,
+            "name": self.name,
+            "age": self.age,
+            "weight": self.weight,
+            "health_logs": self.health_logs,
+            "last_checkup": self.last_checkup,
+            "is_vaccinated": self.is_vaccinated,
+        }
+
 class Dog(Pet):
     def __init__(self, name, age, weight, breed, temperament):
         super().__init__(name, age, weight)
@@ -95,6 +106,14 @@ class Dog(Pet):
         else:
             return "Large/Giant (Watch for joint pressure)"
 
+    def to_dict(self):
+        data = super().to_dict()
+        data.update({
+            "breed": self.breed,
+            "temperament": self.temperament,
+        })
+        return data
+
 class Cat(Pet):
     def __init__(self, name, age, weight, breed, temperament):
         super().__init__(name, age, weight)
@@ -125,3 +144,11 @@ class Cat(Pet):
             return "Ideal Weight (Perfect condition)"
         else:
             return "Overweight (Risk of diabetes, consult vet)"
+
+    def to_dict(self):
+        data = super().to_dict()
+        data.update({
+            "breed": self.breed,
+            "temperament": self.temperament,
+        })
+        return data
