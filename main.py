@@ -1,6 +1,7 @@
-from models.pet import Dog,Cat
 import json
 import os
+from models.pet import Dog,Cat
+
 
 def display_menu():
     print("\n --- MyPet: Health Tracker --- \n")
@@ -11,7 +12,9 @@ def display_menu():
     print("5. View Health History")
     print("6. Update Last Checkup")
     print("7. Vaccination")
-    print("8. Exit \n")
+    print("8. Edit Pet Details (Weight/Age)")
+    print("9. Remove Pet")
+    print("10. Exit \n")
     return input("Select an option: ")
 
 def load_pets():
@@ -50,7 +53,7 @@ def load_pets():
 def select_pet(pets_list):
     if not pets_list:
         print("No pets available!")
-        return None
+        return None, None
 
     print("\n Select a pet: \n")
     for i, pet in enumerate(pets_list):
@@ -59,14 +62,14 @@ def select_pet(pets_list):
     try:
         choice = int(input("\nEnter your choice: ")) - 1
         if 0 <= choice < len(pets_list):
-            return pets_list[choice]
+            return pets_list[choice], choice
         else:
             print("Please enter a valid option")
-            return None
+            return None, None
 
     except ValueError:
         print("Please enter a valid option")
-        return None
+        return None, None
 
 def save_pets(pets_list):
     data_to_save = [p.to_dict() for p in pets_list]
@@ -74,6 +77,8 @@ def save_pets(pets_list):
     with open("pets_data.json", "w") as f:
         json.dump(data_to_save, f, indent=4)
         print("Pet data saved into pets_data.json!")
+
+
 
 
 def main():
@@ -143,6 +148,24 @@ def main():
                 print(f"Great! {chosen_pet.name} is now marked as vaccinated")
 
         elif choice == '8':
+            chosen_pet, _ = select_pet(pets)
+            if chosen_pet:
+                print(f"Editing {chosen_pet.name}. Leave blank to keep current value")
+                new_age = input(f"New age (current {chosen_pet.age}): ")
+                new_weight = input(f"New weight (current {chosen_pet.weight}): ")
+                if new_age: chosen_pet.age = int(new_age)
+                if new_weight: chosen_pet.weight = float(new_weight)
+                print("Details updated!")
+
+        elif choice == '9':
+            chosen_pet, index = select_pet(pets)
+            if chosen_pet:
+                confirm = input(f"Are you sure you want to remove {chosen_pet.name}? (y/n): ")
+                if confirm.lower() == 'y':
+                    pets.pop(index)
+                    print("Pet removed from system")
+
+        elif choice == '10':
             save_pets(pets)
             print("\n --- Exiting --- \n")
             break
