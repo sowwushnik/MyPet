@@ -5,16 +5,14 @@ from models.pet import Dog,Cat
 
 def display_menu():
     print("\n --- MyPet: Health Tracker --- \n")
-    print("1. Register a Dog")
-    print("2. Register a Cat")
-    print("3. View Registered Pets")
-    print("4. Add Health Log")
-    print("5. View Health History")
-    print("6. Update Last Checkup")
-    print("7. Vaccination")
-    print("8. Edit Pet Details (Weight/Age)")
-    print("9. Remove Pet")
-    print("10. Exit \n")
+    print("  [REGISTRATION]      [HEALTH & LOGS]")
+    print("  1. Dog              4. Add Log")
+    print("  2. Cat              5. View History")
+    print("  3. View Profiles    6. Update Checkup")
+    print("                      7. Vaccination")
+    print("  [MANAGEMENT]        [SYSTEM]")
+    print("  8. Edit Details     10. Save & Exit")
+    print("  9. Remove Pet")
     return input("Select an option: ")
 
 def load_pets():
@@ -119,14 +117,14 @@ def main():
                     print(f" > Vaccination: {p.get_vaccination_status()} \n")
 
         elif choice == '4':
-            chosen_pet = select_pet(pets)
+            chosen_pet, _ = select_pet(pets)
             if chosen_pet:
                 note = input(f"What happened with {chosen_pet.name} today? ")
                 confirm_msg = chosen_pet.add_log(note)
                 print(confirm_msg)
 
         elif choice == '5':
-            chosen_pet = select_pet(pets)
+            chosen_pet, _ = select_pet(pets)
             if chosen_pet:
                 print(f"\n--- Health History for {chosen_pet.name} ---")
                 history = chosen_pet.get_history()
@@ -134,7 +132,7 @@ def main():
                 print("-----------------")
 
         elif choice == '6':
-            chosen_pet = select_pet(pets)
+            chosen_pet, _ = select_pet(pets)
             if chosen_pet:
                 new_date = input("Enter new date: ")
                 chosen_pet.last_checkup = new_date

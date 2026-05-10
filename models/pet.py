@@ -1,4 +1,5 @@
 import math
+from datetime import datetime
 
 class Pet:
     def __init__(self, name, age, weight):
@@ -32,8 +33,11 @@ class Pet:
         return 70 * math.pow(self.weight, 0.75)
 
     def add_log(self, entry):
-        self.health_logs.append(entry)
-        return f"Log added for {self.name}!"
+        timestamp = datetime.now().strftime("%d.%m.%Y %H:%M")
+        full_entry = f"[{timestamp}] {entry}"
+
+        self.health_logs.append(full_entry)
+        return f"Log added for {self.name} at {timestamp}!"
 
     def get_history(self):
         if not self.health_logs:
