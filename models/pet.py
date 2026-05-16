@@ -2,24 +2,15 @@ import math
 from datetime import datetime
 
 class Pet:
-    def __init__(self, name, age, weight):
+    def __init__(self, name, age, weight, **kwargs):  # Добавили **kwargs
         self.name = name
+        self.age = max(0, age)
+        self.weight = weight if weight > 0 else 1.0
 
-        if age < 0:
-            print(f"Warning: Age for {name} cannot be negative. Setting to 0")
-            self.age = 0
-        else:
-            self.age = age
-
-        if weight <= 0:
-            print(f"Warning: Weight for {name} must be positive. Setting to 1kg default")
-            self.weight = 1.0
-        else:
-            self.weight = weight
-
-        self.health_logs = []
-        self.last_checkup = "Not recorded"
-        self.is_vaccinated = False
+        # Загружаем из kwargs или ставим дефолт
+        self.health_logs = kwargs.get("health_logs", [])
+        self.last_checkup = kwargs.get("last_checkup", "Not recorded")
+        self.is_vaccinated = kwargs.get("is_vaccinated", False)
 
     def __str__(self):
         return (f"---------------------------\n"
@@ -80,8 +71,8 @@ class Pet:
         }
 
 class Dog(Pet):
-    def __init__(self, name, age, weight, breed, temperament):
-        super().__init__(name, age, weight)
+    def __init__(self, name, age, weight, breed, temperament, **kwargs):
+        super().__init__(name, age, weight, **kwargs) # Передаем kwargs наверх
         self.breed = breed
         self.temperament = temperament
 
@@ -119,8 +110,8 @@ class Dog(Pet):
         return data
 
 class Cat(Pet):
-    def __init__(self, name, age, weight, breed, temperament):
-        super().__init__(name, age, weight)
+    def __init__(self, name, age, weight, breed, temperament, **kwargs):
+        super().__init__(name, age, weight, **kwargs) # Передаем kwargs наверх
         self.breed = breed
         self.temperament = temperament
 
