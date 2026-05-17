@@ -22,7 +22,6 @@ class MainMenu:
             "text": "#2C3E50"
         }
 
-        # --- HEADER ---
         header = tk.Frame(self.root, bg=self.colors["orange"], padx=20, pady=30)
         header.pack(fill=tk.X)
 
@@ -31,14 +30,12 @@ class MainMenu:
         tk.Label(header, text="Everything is under control 🐾", font=("Segoe UI", 10),
                  fg="white", bg=self.colors["orange"]).pack(anchor="w")
 
-        # --- BODY ---
         body = tk.Frame(self.root, bg="#F4F7F6", padx=20, pady=20)
         body.pack(fill=tk.BOTH, expand=True)
 
         tk.Label(body, text="QUICK NAVIGATION", font=("Segoe UI", 8, "bold"),
                  fg="#95A5A6", bg="#F4F7F6").pack(anchor="w", pady=(0, 10))
 
-        # CARDS (English Labels)
         self.add_mobile_card(body, "🐕 MY PETS", "Database & Profiles", self.colors["blue"], self.open_database)
         self.add_mobile_card(body, "📊 HEALTH", "Weight & Activity", self.colors["teal"],
                              lambda: messagebox.showinfo("Info", "Health module coming soon!"))
@@ -90,7 +87,6 @@ class PetApp:
             "text_gray": "#95A5A6"
         }
 
-        # --- HEADER ---
         header = tk.Frame(self.window, bg=self.colors["secondary_b"], padx=20, pady=25)
         header.pack(fill=tk.X)
 
@@ -101,7 +97,6 @@ class PetApp:
                   bg=self.colors["secondary_b"], relief=tk.FLAT, cursor="hand2",
                   command=self.window.destroy).pack(side=tk.RIGHT)
 
-        # --- ACTION BUTTONS ---
         top_btns = tk.Frame(self.window, bg="#F4F7F6", pady=15)
         top_btns.pack(fill=tk.X, padx=20)
 
@@ -113,7 +108,6 @@ class PetApp:
                   font=("Segoe UI", 9, "bold"), relief=tk.FLAT, width=15, pady=8,
                   command=lambda: self.add_pet_window("Cat")).pack(side=tk.LEFT, expand=True, padx=5)
 
-        # --- SCROLLABLE CONTENT ---
         self.canvas = tk.Canvas(self.window, bg="#F4F7F6", highlightthickness=0)
         self.scrollbar = ttk.Scrollbar(self.window, orient=tk.VERTICAL, command=self.canvas.yview)
         self.scrollable_frame = tk.Frame(self.canvas, bg="#F4F7F6")
