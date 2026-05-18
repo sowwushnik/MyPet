@@ -2,15 +2,17 @@ import math
 from datetime import datetime
 
 class Pet:
-    def __init__(self, name, age, weight, **kwargs):  # Добавили **kwargs
+    def __init__(self, name, age, weight, **kwargs):
         self.name = name
         self.age = max(0, age)
         self.weight = weight if weight > 0 else 1.0
 
-        # Загружаем из kwargs или ставим дефолт
+        #Encapsulation
         self.health_logs = kwargs.get("health_logs", [])
         self.last_checkup = kwargs.get("last_checkup", "Not recorded")
         self.is_vaccinated = kwargs.get("is_vaccinated", False)
+        self.breed = kwargs.get("breed", "Unknown")
+        self.temperament = kwargs.get("temperament", "Unknown")
 
     def __str__(self):
         return (f"---------------------------\n"
@@ -26,7 +28,6 @@ class Pet:
     def add_log(self, entry):
         timestamp = datetime.now().strftime("%d.%m.%Y %H:%M")
         full_entry = f"[{timestamp}] {entry}"
-
         self.health_logs.append(full_entry)
         return f"Log added for {self.name} at {timestamp}!"
 
@@ -65,16 +66,17 @@ class Pet:
             "name": self.name,
             "age": self.age,
             "weight": self.weight,
+            "breed": self.breed,
+            "temperament": self.temperament,
             "health_logs": self.health_logs,
             "last_checkup": self.last_checkup,
-            "is_vaccinated": self.is_vaccinated,
+            "is_vaccinated": self.is_vaccinated
         }
 
 class Dog(Pet):
     def __init__(self, name, age, weight, breed, temperament, **kwargs):
-        super().__init__(name, age, weight, **kwargs) # Передаем kwargs наверх
-        self.breed = breed
-        self.temperament = temperament
+        kwargs.update({"breed": breed, "temperament": temperament})
+        super().__init__(name, age, weight, **kwargs)
 
     def __str__(self):
         return (f"---------------------------\n"
@@ -97,7 +99,7 @@ class Dog(Pet):
         if self.weight < 5:
             return "Toy/Small (Check for fragile bones)"
         elif 5 <= self.weight < 30:
-            return "Medium (Ideal for most active breeds"
+            return "Medium (Ideal for most active breeds)"
         else:
             return "Large/Giant (Watch for joint pressure)"
 
@@ -111,9 +113,8 @@ class Dog(Pet):
 
 class Cat(Pet):
     def __init__(self, name, age, weight, breed, temperament, **kwargs):
-        super().__init__(name, age, weight, **kwargs) # Передаем kwargs наверх
-        self.breed = breed
-        self.temperament = temperament
+        kwargs.update({"breed": breed, "temperament": temperament})
+        super().__init__(name, age, weight, **kwargs)
 
     def __str__(self):
         return (f"---------------------------\n"

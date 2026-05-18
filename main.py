@@ -5,14 +5,12 @@ from models.pet import Dog, Cat
 import json
 import os
 
-
 class MainMenu:
     def __init__(self, root):
         self.root = root
         self.root.title("MyPet Pro")
         self.root.geometry("360x700")
         self.root.configure(bg="#F4F7F6")
-
         self.colors = {
             "orange": "#FF7800",
             "blue": "#133CAC",
@@ -22,18 +20,18 @@ class MainMenu:
             "text": "#2C3E50"
         }
 
-        header = tk.Frame(self.root, bg=self.colors["orange"], padx=20, pady=30)
+        header = tk.Frame(self.root, bg=self.colors["teal"], padx=20, pady=30)
         header.pack(fill = tk.X)
 
         tk.Label(header, text="Good morning, Meirkhan!", font=("Segoe UI", 18, "bold"),
-                 fg="white", bg=self.colors["orange"]).pack(anchor="w")
+                 fg="white", bg=self.colors["teal"]).pack(anchor="w")
         tk.Label(header, text="Everything is under control 🐾", font=("Segoe UI", 10),
-                 fg="white", bg=self.colors["orange"]).pack(anchor="w")
+                 fg="white", bg=self.colors["teal"]).pack(anchor="w")
 
-        avatar_frame = tk.Frame(header, bg=self.colors["orange"], pady=15)
+        avatar_frame = tk.Frame(header, bg=self.colors["teal"], pady=15)
         avatar_frame.pack(fill=tk.X)
         for icon in ["🐕", "🐈"]:
-            tk.Label(avatar_frame, text=icon, font=("Segoe UI", 18), bg="#FF9640", fg="white", width=2).pack(
+            tk.Label(avatar_frame, text=icon, font=("Segoe UI", 18), bg="teal", fg="white", width=2).pack(
                 side=tk.LEFT, padx=5)
 
         body = tk.Frame(self.root, bg="#F4F7F6", padx=20, pady=20)
@@ -44,9 +42,7 @@ class MainMenu:
 
         self.add_mobile_card(body, "🐕 MY PETS", "Database & Profiles", self.colors["blue"], self.open_database)
         self.add_mobile_card(body, "📊 HEALTH", "Weight & Activity", self.colors["teal"],
-                             lambda: messagebox.showinfo("Info", "Health charts..."))
-        self.add_mobile_card(body, "📍 VET MAP", "Find nearby clinics", self.colors["red"],
-                             lambda: messagebox.showinfo("Info", "Map loading..."))
+                             lambda: messagebox.showinfo("Info", "Health charts coming soon..."))
         self.add_mobile_card(body, "🚪 EXIT", "Close App", "#7F8C8D", self.root.quit)
 
         nav_bar = tk.Frame(self.root, bg="white", height=60, highlightbackground="#ECF0F1", highlightthickness=1)
@@ -59,27 +55,19 @@ class MainMenu:
 
     def add_mobile_card(self, master, title, sub, color, command):
         card = tk.Frame(master, bg="white", cursor="hand2", pady=15, padx=15)
-        card.pack(fill=tk.X, pady=8)
-        tk.Frame(card, bg=color, width=4).pack(side=tk.LEFT, fill=tk.Y)
+        card.pack(fill = tk.X, pady=8)
+        tk.Frame(card, bg = color, width=4).pack(side = tk.LEFT, fill = tk.Y)
 
-        txt_frame = tk.Frame(card, bg="white", padx=10)
-        txt_frame.pack(side=tk.LEFT)
+        txt_frame = tk.Frame(card, bg="white", padx = 10)
+        txt_frame.pack(side = tk.LEFT)
 
-        t_lbl = tk.Label(txt_frame, text=title, font=("Segoe UI", 11, "bold"), fg=color, bg="white")
-        t_lbl.pack(anchor="w")
-        s_lbl = tk.Label(txt_frame, text=sub, font=("Segoe UI", 9), fg="#95A5A6", bg="white")
-        s_lbl.pack(anchor="w")
+        tk.Label(txt_frame, text=title, font=("Segoe UI", 11, "bold"), fg=color, bg="white").pack(anchor="w")
+        tk.Label(txt_frame, text=sub, font=("Segoe UI", 9), fg="#95A5A6", bg="white").pack(anchor="w")
 
-        a_lbl = tk.Label(card, text="→", font=("Segoe UI", 14), fg="#BDC3C7", bg="white")
-        a_lbl.pack(side=tk.RIGHT)
-
-        def on_click(e):
-            card.configure(relief=tk.SUNKEN)
-            self.root.after(100, lambda: card.configure(relief=tk.FLAT))
-            command()
-
-        for w in [card, txt_frame, t_lbl, s_lbl, a_lbl]:
-            w.bind("<Button-1>", on_click)
+        def on_click(e): command()
+        card.bind("<Button-1>", on_click)
+        for child in card.winfo_children():
+            child.bind("<Button-1>", on_click)
 
     def open_database(self):
         PetApp(tk.Toplevel(self.root))
@@ -98,6 +86,7 @@ class PetApp:
             "secondary_b": "#133CAC",
             "accent": "#028E9B",
             "bg_light": "#F4F7F6",
+            "teal": "#028E9B",
             "white": "#FFFFFF",
             "text_gray": "#95A5A6"
         }
@@ -105,11 +94,9 @@ class PetApp:
         header = tk.Frame(self.window, bg=self.colors["secondary_b"], padx=20, pady=25)
         header.pack(fill=tk.X)
 
-        tk.Label(header, text="MY PETS", font=("Segoe UI", 16, "bold"),
-                 fg="white", bg=self.colors["secondary_b"]).pack(side=tk.LEFT)
+        tk.Label(header, text="MY PETS", font=("Segoe UI", 16, "bold"),fg="white", bg=self.colors["secondary_b"]).pack(side=tk.LEFT)
 
-        tk.Button(header, text="✕", font=("Segoe UI", 12, "bold"), fg="white",
-                  bg=self.colors["secondary_b"], relief=tk.FLAT, cursor="hand2",
+        tk.Button(header, text="✕", font=("Segoe UI", 12, "bold"), fg="white",bg=self.colors["secondary_b"], relief=tk.FLAT, cursor="hand2",
                   command=self.window.destroy).pack(side=tk.RIGHT)
 
         self.canvas = tk.Canvas(self.window, bg="#F4F7F6", highlightthickness=0)
@@ -149,11 +136,8 @@ class PetApp:
         card = tk.Frame(self.scrollable_frame, bg="white", pady=15, padx=15)
         card.pack(fill=tk.X, pady=8)
 
-        def on_enter(e): card.configure(bg = "#F9F9F9")
-        def on_leave(e): card.configure(bg = "white")
-
-        card.bind("<Enter>", on_enter)
-        card.bind("<Leave>", on_leave)
+        card.bind("<Enter>", lambda e: card.configure(bg = "#F9F9F9"))
+        card.bind("<Leave>", lambda e: card.configure(bg = "white"))
 
         icon = "🐕" if isinstance(pet, Dog) else "🐈"
         info_frame = tk.Frame(card, bg="white")
@@ -164,77 +148,92 @@ class PetApp:
         txt_subframe = tk.Frame(info_frame, bg="white")
         txt_subframe.pack(side=tk.LEFT)
 
-        tk.Label(txt_subframe, text=pet.name.upper(), font=("Segoe UI", 11, "bold"),
-                 fg=self.colors["secondary_b"], bg="white").pack(anchor="w")
-        tk.Label(txt_subframe, text=f"{pet.breed} • {pet.age} y.o.", font=("Segoe UI", 9),
-                 fg=self.colors["text_gray"], bg="white").pack(anchor="w")
+        name_row = tk.Frame(txt_subframe, bg="white")
+        name_row.pack(anchor = "w")
+
+        tk.Label(name_row, text = pet.name.upper(), font = ("Segoe UI", 11, "bold"),
+                 fg = self.colors["secondary_b"], bg = "white").pack(side = tk.LEFT)
+
+        if getattr(pet, "is_vaccinated", False):
+            tk.Label(name_row, text = "🛡️", font = ("Segoe UI", 9), bg = "white", fg = self.colors["teal"]).pack(side = tk.LEFT, padx = 5)
+
+        tk.Label(txt_subframe, text = f"{pet.breed} • {pet.age} y.o.", font = ("Segoe UI", 9), fg = self.colors["text_gray"], bg = "white").pack(anchor = "w")
 
         btns_frame = tk.Frame(card, bg="white")
         btns_frame.pack(side=tk.RIGHT)
 
         tk.Button(btns_frame, text="VIEW", font=("Segoe UI", 8, "bold"), fg=self.colors["accent"],
                   bg="white", relief=tk.FLAT, cursor="hand2",
-                  command=lambda p=pet: self.show_details(p)).pack(side=tk.TOP)
+                  command=lambda p = pet: self.show_details(p)).pack(side=tk.TOP)
 
         tk.Button(btns_frame, text="DELETE", font=("Segoe UI", 7), fg="#E74C3C",
                   bg="white", relief=tk.FLAT, cursor="hand2",
-                  command=lambda i=index: self.remove_pet(i)).pack(side=tk.TOP)
+                  command=lambda i = index: self.remove_pet(i)).pack(side=tk.TOP)
 
     @handle_error
     def add_pet_window(self):
         win = tk.Toplevel(self.window)
-        win.title(f"Add Pet")
         win.geometry("340x650")
         win.configure(bg="white")
         win.grab_set()
 
         tk.Label(win, text = "NEW PET PROFILE", font = ("Segoe UI", 14, "bold"),
-                 fg = "white", bg = self.colors["primary"], pady = 20).pack(fill=tk.X)
+                 fg = "white", bg = self.colors["primary"], pady = 20).pack(fill = tk.X)
 
 
         form = tk.Frame(win, bg="white", padx=30, pady=20)
-        form.pack(fill=tk.BOTH)
+        form.pack(fill = tk.BOTH)
 
-        # TYPE SELECTION
-        tk.Label(form, text = "PET TYPE", font = ("Segoe UI", 8, "bold"), fg = self.colors["text_gray"],
-                 bg = "white").pack(anchor="w", pady = (0,5))
         pet_type_var = tk.StringVar(value = "Dog")
-        type_dropdown = ttk.Combobox(form, textvariable=pet_type_var, values = ["Dog", "Cat"], state="readonly")
-        type_dropdown.pack(fill=tk.X, pady = (0, 15))
+        ttk.Combobox(form, textvariable = pet_type_var, values = ["Dog", "Cat"], state="readonly").pack(fill=tk.X, pady = (0, 15))
 
         fields = [("Name", "Buddy"), ("Age", "2"), ("Weight", "5.5"), ("Breed", "Golden"), ("Character", "Playful")]
         entries = {}
 
-        for label, _ in fields:
+        for label, placeholder in fields:
             tk.Label(form, text=label.upper(), font=("Segoe UI", 8, "bold"), fg=self.colors["text_gray"],
                      bg="white").pack(anchor="w", pady=(10, 0))
             e = tk.Entry(form, bg="#F4F7F6", relief=tk.FLAT, font=("Segoe UI", 10))
             e.pack(fill=tk.X, ipady=8)
             entries[label] = e
 
+        self.vaccine_var = tk.BooleanVar(value=False)
+        tk.Checkbutton(form, text="IS VACCINATED", variable=self.vaccine_var,
+                       font=("Segoe UI", 8, "bold"), fg=self.colors["text_gray"],
+                       bg="white", activebackground="white").pack(anchor="w", pady=10)
+
         def submit():
+            name = entries["Name"].get().strip()
+            age_raw = entries["Age"].get().strip()
+            weight_raw = entries["Weight"].get().strip()
+
+            if not name:
+                messagebox.showwarning("Validation error", "Name cannot be empty")
+                return
+
             try:
-                selected_type = pet_type_var.get()
-                cls = Dog if selected_type == "Dog" else Cat
-
-                name = entries["Name"].get().strip()
-                if not name:
-                    messagebox.showerror("Error", "Please enter a valid pet name")
-                    return
-
-                new_pet = cls(
-                    name,
-                    age = int(entries["Age"].get()),
-                    weight = float(entries["Weight"].get()),
-                    breed = entries["Breed"].get(),
-                    temperament = entries["Character"].get(),
-                )
-                self.pets.append(new_pet)
-                self.save_pets()
-                self.refresh_list()
-                win.destroy()
+                age = int(age_raw)
+                weight = float(weight_raw)
+                if age < 0 or weight <= 0:
+                    raise ValueError
             except ValueError:
-                messagebox.showerror("Error", "Age must be a whole number and Weight must be a decimal (e.g., 5.5)")
+                messagebox.showwarning("Validation error", "Age must be an integer and Weight must be positive")
+                return
+
+            cls = Dog if pet_type_var.get() == "Dog" else Cat
+            new_pet = cls(
+                name = name,
+                age = age,
+                weight = weight,
+                breed = entries["Breed"].get().strip() or "Unknown",
+                temperament = entries["Character"].get().strip() or "Unknown",
+                is_vaccinated = self.vaccine_var.get()
+            )
+
+            self.pets.append(new_pet)
+            self.save_pets()
+            self.refresh_list()
+            win.destroy()
 
         tk.Button(win, text = "SAVE PET", bg = self.colors["accent"], fg = "white",
                   font = ("Segoe UI", 10, "bold"), relief = tk.FLAT, command = submit, pady = 12).pack(fill = tk.X, padx = 30,  pady = 20)
@@ -244,64 +243,87 @@ class PetApp:
         try:
             with open("pets_data.json", "r", encoding="utf-8") as f:
                 data = json.load(f)
-            if not isinstance(data, list): return []
 
             loaded = []
             for item in data:
                 p_type = item.pop("type", "Dog")
                 cls = Dog if p_type == "Dog" else Cat
-                loaded.append(cls(**item))
+
+                pet = cls(**item)
+                loaded.append(pet)
             return loaded
-        except (json.JSONDecodeError, KeyError, TypeError):
+        except Exception as e:
+            print(f"Error loading JSON: {e}")
             return []
-
-    def save_pets(self):
-        data = [p.to_dict() for p in self.pets]
-        with open("pets_data.json", "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=4)
-
-    def remove_pet(self, index):
-        if messagebox.askyesno("Delete", f"Remove {self.pets[index].name}?"):
-            self.pets.pop(index)
-            self.save_pets()
-            self.refresh_list()
 
     def show_details(self, pet):
         profile = tk.Toplevel(self.window)
-        profile.geometry("340x600")
+        profile.geometry("340x750")
         profile.configure(bg="#F4F7F6")
+        profile.grab_set()
+
         color = self.colors["primary"] if isinstance(pet, Dog) else self.colors["secondary_b"]
 
-        header = tk.Frame(profile, bg=color, pady=30)
+        header = tk.Frame(profile, bg=color, pady=20)
         header.pack(fill=tk.X)
         tk.Label(header, text=pet.name.upper(), font=("Segoe UI", 18, "bold"), fg="white", bg=color).pack()
-        tk.Label(header, text="Health Profile", font=("Segoe UI", 9), fg="white", bg=color).pack()
 
-        body = tk.Frame(profile, bg="#F4F7F6", padx=20, pady=20)
+        body = tk.Frame(profile, bg="#F4F7F6", padx=20, pady=10)
         body.pack(fill=tk.BOTH, expand=True)
 
-        tk.Button(header, text = "EDIT INFO", font = ("Segoe UI", 10 , "bold"), fg = "white",
-                  bg = color, relief = tk.GROOVE, padx = 10,
-                  command = lambda: self.edit_pet_window(pet, profile)).pack(pady = 5)
+        info_card = tk.Frame(body, bg="white", padx=15, pady=15)
+        info_card.pack(fill=tk.X, pady=(0, 15))
 
-        data_card = tk.Frame(body, bg="white", padx=15, pady=15)
-        data_card.pack(fill=tk.X)
+        stats = [
+            ("Breed:", pet.breed),
+            ("Age:", f"{pet.age} yrs"),
+            ("Weight:", f"{pet.weight} kg"),
+            ("Status:", "Vaccinated 🛡️" if pet.is_vaccinated else "No vaccine")
+        ]
 
-        details = [("Breed", pet.breed), ("Age", f"{pet.age} years"),
-                   ("Weight", f"{pet.weight} kg"), ("Diet", f"{pet.calculate_daily_calories():.0f} kcal"),
-                   ("Character", pet.temperament)]
+        for label, value in stats:
+            row = tk.Frame(info_card, bg="white")
+            row.pack(fill=tk.X, pady=2)
+            tk.Label(row, text=label, font=("Segoe UI", 9), fg="gray", bg="white").pack(side=tk.LEFT)
+            tk.Label(row, text=value, font=("Segoe UI", 9, "bold"), bg="white").pack(side=tk.RIGHT)
 
-        for lbl, val in details:
-            row = tk.Frame(data_card, bg="white", pady=5)
-            row.pack(fill=tk.X)
-            tk.Label(row, text=lbl, bg="white", fg=self.colors["text_gray"], font=("Segoe UI", 9)).pack(side=tk.LEFT)
-            tk.Label(row, text=val, bg="white", fg=self.colors["secondary_b"], font=("Segoe UI", 9, "bold")).pack(
-                side=tk.RIGHT)
-            tk.Frame(data_card, bg="#F4F7F6", height=1).pack(fill=tk.X, pady=5)
+        tk.Label(body, text="HEALTH LOGS", font=("Segoe UI", 8, "bold"), fg="gray", bg="#F4F7F6").pack(anchor="w")
 
-        tk.Button(profile, text="BACK", bg=self.colors["secondary_b"], fg="white",
-                  relief=tk.FLAT, font=("Segoe UI", 9, "bold"), command=profile.destroy, pady=10).pack(fill=tk.X,
-                                                                                                       padx=20, pady=20)
+        log_frame = tk.Frame(body, bg="white", padx=10, pady=10)
+        log_frame.pack(fill=tk.BOTH, expand=True, pady=5)
+
+        lb = tk.Listbox(log_frame, font=("Segoe UI", 9), relief=tk.FLAT, height=8, bg="white", highlightthickness=0)
+        lb.pack(fill=tk.BOTH, expand=True)
+        for log in pet.health_logs: lb.insert(tk.END, log)
+
+        entry = tk.Entry(log_frame, bg="#F4F7F6", relief=tk.FLAT, font=("Segoe UI", 9))
+        entry.insert(0, "Enter medical note...")
+        entry.pack(fill=tk.X, pady=(10, 5), ipady=5)
+
+        entry.bind("<FocusIn>", lambda e: entry.delete(0, tk.END) if entry.get() == "Enter medical note..." else None)
+        entry.bind("<FocusOut>", lambda e: entry.insert(0, "Enter medical note...") if not entry.get() else None)
+
+        def add_log():
+            note = entry.get().strip()
+            if note and note != "Enter medical note...":
+                pet.add_log(note)
+                lb.insert(tk.END, pet.health_logs[-1])
+                lb.yview(tk.END)
+                entry.delete(0, tk.END)
+                self.save_pets()
+
+        tk.Button(log_frame, text="ADD NOTE", bg=self.colors["accent"], fg="white",
+                  relief=tk.FLAT, font=("Segoe UI", 9, "bold"), command=add_log).pack(fill=tk.X)
+
+        footer = tk.Frame(profile, bg="#F4F7F6", pady=15)
+        footer.pack(fill=tk.X, side=tk.BOTTOM)
+
+        tk.Button(footer, text="EDIT PROFILE", bg = self.colors["teal"], fg="white",
+                  relief=tk.FLAT, width=15, command=lambda: self.edit_pet_window(pet, profile)).pack(side=tk.LEFT,
+                                                                                                     padx=20)
+
+        tk.Button(footer, text="CLOSE", bg="#BDC3C7", fg="white",
+                  relief=tk.FLAT, width=10, command=profile.destroy).pack(side=tk.RIGHT, padx=20)
 
     def edit_pet_window(self, pet, profile_win):
         profile_win.destroy()
@@ -334,6 +356,10 @@ class PetApp:
             e.pack(fill = tk.X, ipady = 8)
             entries[label] = e
 
+        self.edit_vaccine_var = tk.BooleanVar(value = getattr(pet, "is_vaccinated", False))
+        tk.Checkbutton(form, text = "IS VACCINATED", variable = self.edit_vaccine_var,
+                       font = ("Segoe UI", 8, "bold"), fg = self.colors["text_gray"], bg = "white", activebackground = "white").pack(anchor = "w", pady = 10)
+
         def update():
             try:
                 pet.name = entries["Name"].get().strip()
@@ -341,6 +367,7 @@ class PetApp:
                 pet.weight = float(entries["Weight"].get())
                 pet.breed = entries["Breed"].get()
                 pet.temperament = entries["Character"].get()
+                pet.is_vaccinated = self.edit_vaccine_var.get()
 
                 self.save_pets()
                 self.refresh_list()
@@ -351,6 +378,17 @@ class PetApp:
 
         tk.Button(win, text = "SAVE CHANGES", bg = self.colors["accent"], fg = "white",
                   font = ("Segoe UI", 10, "bold"), relief = tk.FLAT, command = update, pady = 12).pack(fill=tk.X, padx = 30, pady=20)
+
+    def save_pets(self):
+        data = [p.to_dict() for p in self.pets]
+        with open("pets_data.json", "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4)
+
+    def remove_pet(self, index):
+        if messagebox.askyesno("Delete", f"Remove {self.pets[index].name}?"):
+            self.pets.pop(index)
+            self.save_pets()
+            self.refresh_list()
 
 
 if __name__ == "__main__":

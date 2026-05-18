@@ -178,13 +178,24 @@ class PetApp:
             entries[f] = e
 
         def save():
-            cls = Dog if pet_type == "Dog" else Cat
-            new_pet = cls(entries["Name"].get(), int(entries["Age"].get()), float(entries["Weight"].get()),
-                          entries["Breed"].get(), entries["Temper"].get())
-            self.pets.append(new_pet)
-            self.save_pets()
-            self.refresh_list()
-            win.destroy()
+            try:
+                cls = Dog if pet_type == "Dog" else Cat
+
+                new_pet = cls(
+                    name = entries["Name"].get(),
+                    age = int(entries["Age"].get()),
+                    weight = float(entries["Weight"].get()),
+                    breed = entries["Breed"].get(),
+                    temperament = entries["Temper"].get(),
+                    is_vaccinated = False
+                )
+
+                self.pets.append(new_pet)
+                self.save_pets()
+                self.refresh_list()
+                win.destroy()
+            except ValueError:
+                messagebox.showwarning("Input Error", "Check Age and Weight formats!")
 
         tk.Button(win, text="SAVE PROFILE", bg=self.colors["accent"], fg="white", font=("Segoe UI", 10, "bold"),
                   relief=tk.FLAT, command=save, pady=12).pack(fill=tk.X, padx=30, pady=30)
@@ -223,10 +234,12 @@ class PetApp:
                 data = json.load(f)
             loaded = []
             for item in data:
+                pet_type = item.pop("type", "Dog")
                 cls = Dog if item.get("type") == "Dog" else Cat
-                loaded.append(cls(item["name"], item["age"], item["weight"], item["breed"], item["temperament"]))
+                loaded.append(cls(**item))
             return loaded
-        except:
+        except Exception as e:
+            print(f"Loading error {e}")
             return []
 
     def save_pets(self):
