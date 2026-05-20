@@ -1,6 +1,6 @@
 import json
 import os
-from config import PET_CLASSES
+from utils.config import PET_CLASSES
 
 class PetStorage:
     def __init__(self, filename = "pets_data.json"):

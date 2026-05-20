@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
+from daily_log_window import DailyLogWindow
 from utils.decorators import handle_error
-from config import THEME, PET_CLASSES
+from utils.config import THEME, PET_CLASSES
 
 
 class MainMenu:
@@ -25,20 +26,31 @@ class MainMenu:
         self.main_container.pack(fill=tk.BOTH, expand=True)
 
         self.show_home_screen()
-
         self.render_navbar()
+
+        self.root.bind("<<PetDataChanged>>", lambda e: self.on_pet_data_changed())
 
     def clear_container(self):
         for widget in self.main_container.winfo_children():
             widget.destroy()
 
     def refresh_current_screen(self):
+        self.pets = self.storage.load_pets()
+        if self.pets and (self.active_pet not in self.pets):
+            matching = [p for p in self.pets if p.name == getattr(self.active_pet, 'name', '')]
+            self.active_pet = matching[0] if matching else self.pets[0]
+        elif not self.pets:
+            self.active_pet = None
+
         if self.current_screen == "Home":
             self.show_home_screen()
         elif self.current_screen == "Health":
             self.show_health_screen()
         elif self.current_screen == "More":
             self.show_more_screen()
+
+    def on_pet_data_changed(self):
+        self.refresh_current_screen()
 
     def show_home_screen(self):
         self.clear_container()
@@ -71,7 +83,7 @@ class MainMenu:
             return
 
         for pet in self.pets:
-            is_active = (pet == self.active_pet)
+            is_active = (self.active_pet and pet.name == self.active_pet.name)
             icon = "🐕" if pet.__class__.__name__ == "Dog" else "🐈"
 
             p_btn = tk.Frame(self.selector_frame, bg=THEME["primary"] if is_active else THEME["teal"],
@@ -120,7 +132,7 @@ class MainMenu:
         grid_frame.columnconfigure(1, weight=1, uniform="group1")
 
         self.add_dashboard_tile(grid_frame, 0, 0, "📝", "Daily log", "Routine tracking", THEME["primary"],
-                                lambda: self.show_health_screen(target_tab="daily"))
+                                lambda: self.open_daily_log_module())
 
         self.add_dashboard_tile(grid_frame, 0, 1, "🩺", "Symptom check", "Health Status", THEME["accent"],
                                 lambda: self.show_health_screen(target_tab="care"))
@@ -131,6 +143,12 @@ class MainMenu:
         weight_sub = f"Weight: {pet.weight} kg"
         self.add_dashboard_tile(grid_frame, 1, 1, "⚖️", "Tracker", weight_sub, "#9B59B6",
                                 lambda: self.show_health_screen(target_tab="daily"))
+
+    def open_daily_log_module(self):
+        if not self.active_pet:
+            messagebox.showwarning("No Pet", "Please select or add a pet first before logging!")
+            return
+        DailyLogWindow(self.root, self.active_pet, self.storage, parent_root=self.root)
 
     def add_dashboard_tile(self, master, row, col, icon, title, subtitle, color, command):
         card = tk.Frame(master, bg="white", cursor="hand2", padx=12, pady=15,
@@ -213,12 +231,74 @@ class MainMenu:
                 side=tk.RIGHT)
 
             def make_cmd(fid=feature_id, t=title):
-                return lambda e: messagebox.showinfo(t, f"Opening {t} for {self.active_pet.name} 🐾")
+                if fid == "daily_log":
+                    return lambda e: self.open_daily_log_module()
+                return lambda e: self.open_history_viewer(fid, t)
 
             click_action = make_cmd()
             item_frame.bind("<Button-1>", click_action)
             for child in txt_frame.winfo_children():
                 child.bind("<Button-1>", click_action)
+
+    def open_history_viewer(self, feature_id, title):
+        history_win = tk.Toplevel(self.root)
+        history_win.geometry("340x500")
+        history_win.title(f"{self.active_pet.name} - {title}")
+        history_win.configure(bg=THEME["bg"])
+        history_win.grab_set()
+
+        header = tk.Frame(history_win, bg=THEME["secondary_b"], padx=15, pady=15)
+        header.pack(fill=tk.X)
+        tk.Label(header, text=title.upper(), font=("Segoe UI", 12, "bold"), fg="white", bg=THEME["secondary_b"]).pack(
+            anchor="w")
+        tk.Label(header, text=f"History log for {self.active_pet.name}", font=("Segoe UI", 8), fg="#BDC3C7",
+                 bg=THEME["secondary_b"]).pack(anchor="w")
+
+        canvas = tk.Canvas(history_win, bg=THEME["bg"], highlightthickness=0)
+        scrollbar = ttk.Scrollbar(history_win, orient=tk.VERTICAL, command=canvas.yview)
+        scroll_frame = tk.Frame(canvas, bg=THEME["bg"])
+
+        scroll_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        canvas.create_window((0, 0), window=scroll_frame, anchor="nw", width=320)
+        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        history_win.bind("<Enter>", lambda e: canvas.bind_all("<MouseWheel>",
+                                                              lambda ev: canvas.yview_scroll(int(-1 * (ev.delta / 120)),
+                                                                                             "units")))
+        history_win.bind("<Leave>", lambda e: canvas.unbind_all("<MouseWheel>"))
+
+        logs = []
+        if hasattr(self.active_pet, "get_logs_by_type"):
+            logs = self.active_pet.get_logs_by_type(feature_id)
+        elif hasattr(self.active_pet, "health_logs") and feature_id in self.active_pet.health_logs:
+            logs = self.active_pet.health_logs[feature_id]
+
+        if not logs:
+            empty_card = tk.Frame(scroll_frame, bg="white", padx=15, pady=20, highlightbackground="#EBF0F1",
+                                  highlightthickness=1)
+            empty_card.pack(fill=tk.X, pady=10)
+            tk.Label(empty_card, text="📭 No records found yet.", font=("Segoe UI", 10, "bold"), fg=THEME["text_gray"],
+                     bg="white").pack()
+            tk.Label(empty_card, text="New entries will appear here after you log them.", font=("Segoe UI", 8),
+                     fg=THEME["text_gray"], bg="white").pack(pady=(5, 0))
+            return
+
+        for log in reversed(logs):
+            card = tk.Frame(scroll_frame, bg="white", padx=12, pady=10, highlightbackground="#EBF0F1",
+                            highlightthickness=1)
+            card.pack(fill=tk.X, pady=4)
+
+            tk.Label(card, text=log.get("date", "Today"), font=("Segoe UI", 8, "bold"), fg=THEME["teal"],
+                     bg="white").pack(anchor="w")
+
+            tk.Label(card, text=log.get("value", ""), font=("Segoe UI", 10), fg=THEME["secondary_b"], bg="white",
+                     wraplength=280, justify="left").pack(anchor="w", pady=(2, 4))
+
+            if log.get("notes"):
+                tk.Label(card, text=f"✍️ {log['notes']}", font=("Segoe UI", 8, "italic"), fg=THEME["text_gray"],
+                         bg="white", wraplength=280, justify="left").pack(anchor="w")
 
     def show_more_screen(self):
         self.clear_container()
@@ -239,6 +319,12 @@ class MainMenu:
 
         canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(10, 0), pady=10)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+        self.root.bind("<Enter>", lambda e: canvas.bind_all("<MouseWheel>", _on_mousewheel))
+        self.root.bind("<Leave>", lambda e: canvas.unbind_all("<MouseWheel>"))
 
         user_card = tk.Frame(scroll_frame, bg="white", padx=15, pady=15, highlightbackground="#EBF0F1",
                              highlightthickness=1)
@@ -350,20 +436,9 @@ class MainMenu:
 
     def open_my_pet_hub(self):
         my_pet_win = tk.Toplevel(self.root)
-
         app = MyPetHub(my_pet_win, self.storage, self.active_pet, self.pets, parent_menu=self)
 
-        def on_close_hub():
-            self.pets = self.storage.load_pets()
-            if self.pets and (self.active_pet not in self.pets):
-                self.active_pet = self.pets[0]
-            elif not self.pets:
-                self.active_pet = None
-
-            self.refresh_current_screen()
-            my_pet_win.destroy()
-
-        my_pet_win.protocol("WM_DELETE_WINDOW", on_close_hub)
+        my_pet_win.protocol("WM_DELETE_WINDOW", app.close_and_sync)
 
     def render_navbar(self):
         nav_bar = tk.Frame(self.root, bg=THEME["white"], height=60, highlightbackground="#ECF0F1", highlightthickness=1)
@@ -394,13 +469,14 @@ class MainMenu:
             i_lab.bind("<Button-1>", click_action)
             t_lab.bind("<Button-1>", click_action)
 
+
 class MyPetHub:
     def __init__(self, window, storage, active_pet, all_pets, parent_menu=None):
         self.window = window
         self.storage = storage
         self.active_pet = active_pet
         self.all_pets = all_pets
-        self.parent_menu = parent_menu  # Ссылка на главное меню для синхронизации
+        self.parent_menu = parent_menu
 
         self.window.title("My Pet Workspace")
         self.window.geometry("360x700")
@@ -428,15 +504,21 @@ class MyPetHub:
         self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(10, 0))
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
+        def _on_hub_mousewheel(event):
+            self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+        self.window.bind("<Enter>", lambda e: self.canvas.bind_all("<MouseWheel>", _on_hub_mousewheel))
+        self.window.bind("<Leave>", lambda e: self.canvas.unbind_all("<MouseWheel>"))
+
         self.render_hub()
 
     def close_and_sync(self):
+        self.sync_with_parent()
+        self.window.unbind_all("<MouseWheel>")
         self.window.destroy()
 
     def sync_with_parent(self):
         if self.parent_menu:
-            self.parent_menu.pets = self.all_pets
-            self.parent_menu.active_pet = self.active_pet
             self.parent_menu.refresh_current_screen()
 
     def render_hub(self):
